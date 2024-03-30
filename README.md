@@ -67,7 +67,12 @@
    Также будет создано виртуальное окружение, если привычнее видеть его в
    директории проекта, то
    используйте [настройку](https://python-poetry.org/docs/configuration/#adding-or-updating-a-configuration-setting) `virtualenvs.in-project`
-   
+
+3. **Docker**
+- [Документация](https://docs.docker.com/)
+- [Установка docker на Linux](https://docs.docker.com/engine/install/ubuntu/)
+- [Установка docker на Windows](https://docs.docker.com/desktop/install/windows-install/)
+
 # Разворачиваем проект локально
 
 1. Устанавливаем зависимости
