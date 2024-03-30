@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  fix_price_scrapy:
+    build: .
+    command: scrapy crawl fix_price
+    volumes:
+      - .:/app
