@@ -6,3 +6,5 @@ services:
     command: scrapy crawl fix_price
     volumes:
       - .:/app
+    env_file:
+      - .env

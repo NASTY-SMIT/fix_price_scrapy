@@ -1,10 +1,16 @@
+import os
 import re
 import time
+from typing import Optional, Union
 
+from dotenv import load_dotenv
 import scrapy
+from scrapy.http import HtmlResponse, TextResponse
 
 from fix_price_scrapy.items import FixPriceScrapyItem
 from fix_price_scrapy.settings import ALLOWED_DOMAINS, START_URLS
+
+load_dotenv()
 
 
 class FixPriceSpider(scrapy.Spider):
@@ -12,15 +18,22 @@ class FixPriceSpider(scrapy.Spider):
     allowed_domains = ALLOWED_DOMAINS
     start_urls = START_URLS
 
-    def parse(self, response):
-        # Если вы имеете proxy сервер, раскоментируйте эти строчки
-        # и впишите ваши данные
-        # for url in self.start_urls:
-        #     yield scrapy.Request(
-        #             url=url,
-        #             callback=self.parse,
-        #             meta={"proxy": "http://<адресс прокси>:<порт>"},
-        #         )
+    def start_requests(self):
+        proxy_login = os.getenv("PROXY_LOGIN")
+        proxy_password = os.getenv("PROXY_PASSWORD")
+        proxy_ip = os.getenv("PROXY_IP")
+        proxy_port = os.getenv("PROXY_PORT")
+        proxy_url = (
+            f"http://{proxy_login}:{proxy_password}@"
+            f"{proxy_ip}:{proxy_port}")
+        for url in self.start_urls:
+            yield scrapy.Request(
+                    url=url,
+                    callback=self.parse,
+                    meta={"proxy": proxy_url},
+                )
+
+    def parse(self, response: Union[HtmlResponse, TextResponse]):
         next_pages = response.css(
             ".pagination.pagination a.number::attr(href)"
             ).extract()
@@ -31,10 +44,12 @@ class FixPriceSpider(scrapy.Spider):
             for i in range(2, len(next_pages)):
                 yield response.follow(next_pages[i], callback=self.parse)
 
-    def parse_products(self, response, **kwargs):
-        match = re.search(r"specialPrice:(\{.*?\})", response.xpath(
-            "//script[contains(text(), 'specialPrice')]/text()"
-            ).extract_first())
+    def parse_products(
+         self, response: Union[HtmlResponse, TextResponse], **kwargs):
+        match: Optional[re.Match[str]] = re.search(
+            r"specialPrice:(\{.*?\})", response.xpath(
+                "//script[contains(text(), 'specialPrice')]/text()"
+                ).extract_first())
         special_price_value = None
         if match:
             special_price_match = re.search(r'price:"([^"]+)"', match.group(1))

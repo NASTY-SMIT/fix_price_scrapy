@@ -1,4 +1,9 @@
+import os
+
+from dotenv import load_dotenv
 from scrapy import signals
+
+load_dotenv()
 
 
 class FixPriceScrapySpiderMiddleware:
@@ -47,15 +52,21 @@ class FixPriceScrapyDownloaderMiddleware:
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
 
-# Если вы имеете proxy сервер, раскоментируйте эти строчки
-# и впишите ваши данные
-# class CustomProxyMiddleware(object):
-#     def __init__(self):
-#         self.proxy = "http://<адресс прокси>:<порт>"
 
-#     def process_request(self, request, spider):
-#         if 'proxy' not in request.meta:
-#             request.meta['proxy'] = self.proxy
+class CustomProxyMiddleware(object):
+    def __init__(self):
+        proxy_login = os.getenv("PROXY_LOGIN")
+        proxy_password = os.getenv("PROXY_PASSWORD")
+        proxy_ip = os.getenv("PROXY_IP")
+        proxy_port = os.getenv("PROXY_PORT")
+        proxy_url = (
+            f"http://{proxy_login}:{proxy_password}@"
+            f"{proxy_ip}:{proxy_port}")
+        self.proxy = proxy_url
 
-#     def get_proxy(self):
-#         return self.proxy
+    def process_request(self, request, spider):
+        if 'proxy' not in request.meta:
+            request.meta['proxy'] = self.proxy
+
+    def get_proxy(self):
+        return self.proxy

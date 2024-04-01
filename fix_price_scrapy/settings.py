@@ -7,18 +7,14 @@ ALLOWED_DOMAINS = ["fix-price.com"]
 START_URLS = [
     "https://fix-price.com/catalog/kosmetika-i-gigiena/ukhod-za-polostyu-rta?sort=sold&page=1",
     "https://fix-price.com/catalog/igrushki/igrovye-nabory-nastolnye-igry?sort=sold&page=1",
-    "https://fix-price.com/catalog/krasota-i-zdorove/dlya-tela?sort=sold&page=1"]
+    "https://fix-price.com/catalog/krasota-i-zdorove/dlya-tela?sort=sold&page=1"
+    ]
 
 ROBOTSTXT_OBEY = False
 
-# SPIDER_MIDDLEWARES = {
-#    "fix_price_scrapy.middlewares.FixPriceScrapySpiderMiddleware": 543,
-# }
-
-# Если вы имеете proxy сервер, раскоментируйте эти строчки
-# DOWNLOADER_MIDDLEWARES = {
-#    "fix_price_scrapy.middlewares.CustomProxyMiddleware": 350,
-# }
+DOWNLOADER_MIDDLEWARES = {
+   "fix_price_scrapy.middlewares.CustomProxyMiddleware": 350,
+}
 
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
